@@ -210,3 +210,19 @@ DegreeUpRight=(object)=>{
     v.applyAxisAngle( new THREE.Vector3(0, 1, 0), rads);
     object.position.add(v)
 }
+
+ShootStraightUp = (object)=>{
+    totalrotation=0
+    v = new THREE.Vector3(0, 0, -controls.ballSpeed)
+    rads = THREE.Math.degToRad(totalrotation)
+    v.applyAxisAngle( new THREE.Vector3(0, 1, 0), rads);
+    object.position.add(v)
+}
+
+ShootStraightDown = (object)=>{
+    totalrotation=180
+    v = new THREE.Vector3(0, 0, -controls.ballSpeed)
+    rads = THREE.Math.degToRad(totalrotation)
+    v.applyAxisAngle( new THREE.Vector3(0, 1, 0), rads);
+    object.position.add(v)
+}

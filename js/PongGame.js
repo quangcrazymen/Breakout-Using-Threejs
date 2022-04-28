@@ -74,7 +74,8 @@
     torusGeometry.position.x = -7
     const box = new THREE.BoxHelper( torusGeometry, 0xffff00 )
     scene.add(box)
-    console.log(torusGeometry)
+    let torusObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
+    torusObjectBB.setFromObject(torusGeometry)
 
     const torusKnotGeometry = getTorusKnot()
     scene.add(torusKnotGeometry)
@@ -85,8 +86,9 @@
     torusKnotGeometry.position.z = -6
     torusKnotGeometry.position.y = 1
     torusKnotGeometry.position.x = 7
-    let torusObject = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
-    torusObject.setFromObject(torusGeometry)
+    let torusKnotObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
+    torusKnotObjectBB.setFromObject(torusKnotGeometry)
+
     //testBoxBB.copy(targets.children[i].geometry.boundingBox).applyMatrix4(targets.children[i].matrixWorld)
 
     const renderer = new THREE.WebGLRenderer();
@@ -102,6 +104,8 @@
     let downLeft = 1
     let downRight = 0
     let upLeft =0
+    let straightUp = 0
+    let straightDown = 0
 
     let ballBB = new THREE.Sphere(new THREE.Vector3(0,0,0),1)
 
@@ -138,20 +142,6 @@
         
     }
 
-    //list of individual targets
-    //const targetsBB_0 = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
-    //targetsBB_0.setFromObject(targets)
-    
-    //const box = new THREE.BoxHelper( targets.children[0], 0xffff00 )
-    // for(let i=1;i<targets.children.length;i++){
-    //     console.log(targets.children[i])
-    //     testBoxBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
-    //     testBoxBB.setFromObject(targets.children[i])
-    //     testBoxBB.copy(targets.children[i].geometry.boundingBox).applyMatrix4(targets.children[i].matrixWorld)
-    //     // console.log(targets.children[i])
-    //     const box = new THREE.BoxHelper( targets.children[i], 0xffff00 )
-    //     scene.add(box)
-    // }
     const gui = new dat.GUI();
 
     gui.add(controls, 'ballSpeed', 0, 1);
@@ -233,7 +223,26 @@
                 DegreeUpLeft(ball)  
             }
         }
-    
+        else if(straightUp === 1){
+            if(Math.abs(ball.position.z)>= planeHeight/2){
+                straightUp = 0
+                straightDown = 1
+                ShootStraightDown(ball)
+            }
+            else{
+                ShootStraightUp(ball)
+            }
+        }
+        else if(straightDown === 1){
+            if(Math.abs(ball.position.z)>= planeHeight/2){
+                straightDown = 0
+                straightUp = 1
+                ShootStraightUp(ball)
+            }
+            else{
+                ShootStraightDown(ball)
+            }
+        }
 
         //If stuck try to implement this: https://www.youtube.com/watch?v=9H3HPq-BTMo
         if(ball.position.z>0){
@@ -243,7 +252,7 @@
             let deltaX = Math.abs(paddlePositionX-ballPositionX)
             let distanceOfBallAndPaddle = Math.sqrt(ballPositionZ*ballPositionZ+deltaX*deltaX)
                 
-            if(distanceOfBallAndPaddle<2){
+            if(distanceOfBallAndPaddle>2&&distanceOfBallAndPaddle<3.5 && ballPositionZ <= 1.5){
                 ball.material.transparent = true
                 ball.material.opacity = 0.5
                 ball.material.color = new THREE.Color(Math.random()*0xffffff)
@@ -255,19 +264,43 @@
                     downRight=0
                     upRight=1
                 }
+                else if(straightDown === 1){
+                    upRight = 1
+                    straightDown = 0
+                }
+            }
+            else if(distanceOfBallAndPaddle<2 && ballPositionZ <= 1.5){
+                ball.material.transparent = true
+                ball.material.opacity = 0.5
+                ball.material.color = new THREE.Color(Math.random()*0xffffff)
+
+                if(downLeft===1){
+                    downLeft=0
+                    straightUp=1
+                }
+                else if(downRight===1){
+                    downRight=0
+                    straightUp=1
+                }
+                if(straightDown === 1){
+                    straightDown = 0
+                    straightUp = 1
+                }
             }
             else{
                 ball.material.opacity=1.0
             }
-            //console.log(distanceOfBallAndPaddle)
+            console.log(distanceOfBallAndPaddle)
         }
         //create bounding box for the ball
-        //let testBox = scene.getObjectByName('testBox')
-        //testBoxBB.setFromObject(testBox)
         ballBB.copy(ball.geometry.boundingSphere).applyMatrix4(ball.matrixWorld)
         if(torusGeometry.visible === true){
-            if(checkCollisions(ball, torusObject))
+            if(checkCollisions(ball, torusObjectBB))
                 torusGeometry.visible = false
+        }
+        if(torusKnotGeometry.visible === true){
+            if(checkCollisions(ball, torusKnotObjectBB))
+            torusKnotGeometry.visible = false
         }
     
         // THREE JS PICKING: https://r105.threejsfundamentals.org/threejs/lessons/threejs-picking.html
@@ -316,18 +349,6 @@
     }   
 })()
 //group of target box
-
-
-
-// BBArray = []
-// setBoundingBox = (object)=>{
-//     for(let i = 0 ;i<64;i++){
-//         let BB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
-//         BB.setFromObject(object.children[i])
-//         BBArray.push(BB)
-//     }
-//     return BBArray
-// }
 
 
 //Test javascript
