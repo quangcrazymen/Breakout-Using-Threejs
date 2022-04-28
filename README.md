@@ -1,6 +1,6 @@
 ## Welcome to GitHub Pages
 
- Your site is ready to be published at https://quangcrazymen.github.io/Burnout-Using-Threejs/
+ Your site is published at https://quangcrazymen.github.io/Breakout-Using-Threejs/
 
 You can use the [editor on GitHub](https://github.com/quangcrazymen/Burnout-Using-Threejs/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
 
