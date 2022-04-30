@@ -48,20 +48,24 @@
     paddle.position.z=plane.geometry.parameters.height/2-paddle.geometry.parameters.height/2
     paddle.name='paddle'
     //create bounding box for the paddle
-    let testBox = getBox(1,1,1)
-    scene.add(testBox)
-    testBox.name = 'testBox'
+    // let testBox = getBox(1,1,1)
+    // scene.add(testBox)
+    // testBox.name = 'testBox'
 
     //Add Target Geometry
     const coneGeometry = getCone(1,2,16)
     coneGeometry.position.x=4
     coneGeometry.position.y=1
     scene.add(coneGeometry)
+    let coneObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
+    coneObjectBB.setFromObject(coneGeometry)
 
     const dodecahedronGeometry= getDodecahedron(1)
     dodecahedronGeometry.position.x=-4
     dodecahedronGeometry.position.y=1
     scene.add(dodecahedronGeometry)
+    let dodecahedronObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
+    dodecahedronObjectBB.setFromObject(dodecahedronGeometry)
 
     const heartGeometry = getHeart()
     scene.add(heartGeometry)
@@ -71,6 +75,8 @@
     heartGeometry.rotation.x = Math.PI/2
     heartGeometry.position.y = 1
     heartGeometry.position.z = -6
+    let heartObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
+    heartObjectBB.setFromObject(heartGeometry)
 
     const torusGeometry = getTorus()
     scene.add(torusGeometry)
@@ -97,8 +103,6 @@
     torusKnotGeometry.position.x = 7
     let torusKnotObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
     torusKnotObjectBB.setFromObject(torusKnotGeometry)
-
-    //testBoxBB.copy(targets.children[i].geometry.boundingBox).applyMatrix4(targets.children[i].matrixWorld)
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth,window.innerHeight);
@@ -303,6 +307,7 @@
         }
         //create bounding box for the ball
         ballBB.copy(ball.geometry.boundingSphere).applyMatrix4(ball.matrixWorld)
+        //Add collision detection for targets in the scene
         if(torusGeometry.visible === true){
             if(checkCollisions(ball, torusObjectBB))
                 torusGeometry.visible = false
@@ -310,6 +315,18 @@
         if(torusKnotGeometry.visible === true){
             if(checkCollisions(ball, torusKnotObjectBB))
             torusKnotGeometry.visible = false
+        }
+        if(heartGeometry.visible === true){
+            if(checkCollisions(ball, heartObjectBB))
+            heartGeometry.visible = false
+        }
+        if(dodecahedronGeometry.visible === true){
+            if(checkCollisions(ball, dodecahedronObjectBB))
+            dodecahedronGeometry.visible = false
+        }
+        if(coneGeometry.visible === true){
+            if(checkCollisions(ball, coneObjectBB))
+            coneGeometry.visible = false
         }
     
         // THREE JS PICKING: https://r105.threejsfundamentals.org/threejs/lessons/threejs-picking.html
