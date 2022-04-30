@@ -1,4 +1,6 @@
 (()=>{
+    // listen to the resize events
+    window.addEventListener('resize', onResize, false);
     const scene = new THREE.Scene()
     console.log(THREE.REVISION)
     const camera = new THREE.PerspectiveCamera(
@@ -16,15 +18,22 @@
     camera.up.set(0, 0, -1);
     camera.lookAt(0, 0, 0);
 
+    //Change this line
+    //camera.position.y=70
+
     //Add ball
     const ball = getSphere(0.5)
     scene.add(ball)
     ball.position.y=0.5
+
     //Add plane
     const plane = getPlane(25)
     scene.add(plane)
     plane.name= 'plane'
     plane.rotation.x = Math.PI/2
+
+    //Add wall
+    createBoundingWall(scene)
 
     //Add lighting
     const pointLight = getPointLight(2)
@@ -163,13 +172,13 @@
         const planeHeight = plane.geometry.parameters.height
         
         if(upRight === 1){
-            if(Math.abs(ball.position.z)>= planeHeight/2){
+            if(Math.abs(ball.position.z)>= planeHeight/2-0.5){
                 upRight=0
                 downRight = 1
                 //To prevent the ball from stucking in the boundary
                 DegreeDownLeft(ball)
             }
-            else if(Math.abs(ball.position.x)>= planeWidth/2){
+            else if(Math.abs(ball.position.x)>= planeWidth/2-0.5){
                 upLeft=1
                 upRight=0
                 DegreeDownLeft(ball)
@@ -179,12 +188,12 @@
             }
         }
         else if(downRight === 1){
-            if(Math.abs(ball.position.x)>= planeWidth/2){
+            if(Math.abs(ball.position.x)>= planeWidth/2-0.5){
                 downRight=0
                 downLeft = 1
                 DegreeUpLeft(ball)
             }
-            else if(Math.abs(ball.position.z)>= planeHeight/2){
+            else if(Math.abs(ball.position.z)>= planeHeight/2-0.5){
                 upRight = 1
                 downRight = 0
                 DegreeUpLeft(ball)
@@ -194,12 +203,12 @@
             }
         }
         else if(downLeft === 1){
-            if(Math.abs(ball.position.x)>= planeWidth/2 ){
+            if(Math.abs(ball.position.x)>= planeWidth/2 -0.5){
                 downRight=1
                 downLeft=0
                 DegreeUpRight(ball)
             }
-            else if(Math.abs(ball.position.z)>= planeHeight/2){
+            else if(Math.abs(ball.position.z)>= planeHeight/2-0.5){
                 upLeft= 1
                 downLeft=0 
                 DegreeUpRight(ball)
@@ -209,12 +218,12 @@
             }
         }
         else if(upLeft === 1){
-            if(Math.abs(ball.position.x)>= planeWidth/2 ){
+            if(Math.abs(ball.position.x)>= planeWidth/2-0.5 ){
                 upLeft=0
                 upRight = 1
                 DegreeDownRight(ball)
             }
-            else if(Math.abs(ball.position.z)>= planeHeight/2){
+            else if(Math.abs(ball.position.z)>= planeHeight/2-0.5){
                 downLeft=1
                 upLeft=0
                 DegreeDownRight(ball)
@@ -224,7 +233,7 @@
             }
         }
         else if(straightUp === 1){
-            if(Math.abs(ball.position.z)>= planeHeight/2){
+            if(Math.abs(ball.position.z)>= planeHeight/2-0.5){
                 straightUp = 0
                 straightDown = 1
                 ShootStraightDown(ball)
@@ -234,7 +243,7 @@
             }
         }
         else if(straightDown === 1){
-            if(Math.abs(ball.position.z)>= planeHeight/2){
+            if(Math.abs(ball.position.z)>= planeHeight/2-0.5){
                 straightDown = 0
                 straightUp = 1
                 ShootStraightUp(ball)
@@ -347,6 +356,11 @@
                 break
         }
     }   
+    function onResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }  
 })()
 //group of target box
 

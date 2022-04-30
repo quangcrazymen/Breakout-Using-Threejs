@@ -174,6 +174,33 @@ generateTarget = (amount,separationMultiplier)=>{
     return group
 }
 
+function createBoundingWall(scene) {
+    var wallLeft = new THREE.BoxGeometry(50.5, 1, 1);
+    var wallRight = new THREE.BoxGeometry(50.5, 1, 1);
+    var wallTop = new THREE.BoxGeometry(1, 1, 25);
+    var wallBottom = new THREE.BoxGeometry(1, 1, 25);
+  
+    var wallMaterial = new THREE.MeshLambertMaterial({
+      color: 0xa0522d
+    });
+  
+    var wallLeftMesh = new THREE.Mesh(wallLeft, wallMaterial);
+    var wallRightMesh = new THREE.Mesh(wallRight, wallMaterial);
+    var wallTopMesh = new THREE.Mesh(wallTop, wallMaterial);
+    var wallBottomMesh = new THREE.Mesh(wallBottom, wallMaterial);
+  
+    wallLeftMesh.position.set(0, 1, -12.5);
+    wallRightMesh.position.set(0, 1, 12.5);
+    wallTopMesh.position.set(-25, 1, 0);
+    wallBottomMesh.position.set(25, 1, 0);
+  
+    scene.add(wallLeftMesh);
+    scene.add(wallRightMesh);
+    scene.add(wallBottomMesh);
+    scene.add(wallTopMesh);
+  
+  }
+
 var controls = new function () {
     this.ballSpeed = 0.1;
     //this.bouncingSpeed = 0.03;
