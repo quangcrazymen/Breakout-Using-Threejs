@@ -200,6 +200,10 @@ function createBoundingWall(scene) {
     scene.add(wallTopMesh);
   
   }
+  //Particle effect
+  //https://www.youtube.com/watch?v=DtRFv9_XfnE&t=21s
+
+
 
 var controls = new function () {
     this.ballSpeed = 0.1;

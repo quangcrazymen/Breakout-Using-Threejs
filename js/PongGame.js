@@ -160,7 +160,70 @@
     gui.add(controls, 'ballSpeed', 0, 1);
     //gui.add(controls, 'bouncingSpeed', 0, 0.5);
     //gui.add(controls, 'toggleFunction',0,1)
+
+    //Adding some fireworks
+    let explosions = []
+    function keyPressed(k){
+        if(k.key ===" "){
+            let e = new Explosion
+            e.makeParticles();
+            explosions.push(e)
+        }
+    }
+    window.addEventListener("keydown",keyPressed,false)
+
+    function Explosion(){
+        this.particleGroup = new THREE.Group()
+        this.explosion = false
+        this.particleTexture = new THREE.TextureLoader().load("whiteSpot.png")
+        this.numberParticles = Math.random()*200+100
+        this.spd = 0.01
+        this.color = new THREE.Color()
     
+        this.makeParticles = function(){
+            this.color.setHSL((Math.random(),0.95,0.5))
+    
+            for (let i=0;i<this.numberParticles;i++){
+                let particleMaterial = new THREE.SpriteMaterial({map: this.particleTexture,depthTest : false})
+    
+                let sprite = new THREE.Sprite(particleMaterial)
+    
+                sprite.material.blending = THREE.AdditiveBlending
+    
+                sprite.userData.velocity = new THREE.Vector3(
+                    Math.random() * this.spd - this.spd/2,
+                    Math.random() * this.spd - this.spd/2,
+                    Math.random() * this.spd - this.spd/2,
+                )
+                sprite.userData.velocity.multiplyScalar(Math.random() * Math.random()*3+2)
+    
+                let size = Math.random()*0.1+0.1
+                sprite.scale.set(size ,size,size)
+    
+                this.particleGroup.add(sprite)
+            }
+    
+            this.particleGroup.position.set(Math.random()*20-10,Math.random()*5+3,Math.random()*10-5)
+    
+            scene.add(this.particleGroup)
+    
+            this.explosion = true
+    
+        }
+    
+        this.update = ()=>{
+            // ES6: forEach method
+            this.particleGroup.children.forEach((child)=>{
+                child.position.add(child.userData.velocity)
+                child.material.opacity -= 0.008
+            })
+            // ES6: filter method
+            this.particleGroup.child = this.particleGroup.children.filter((child) => child.material.opacity > 0.0)
+            if(this.particleGroup.children.length === 0) this.explosion = false;
+            explosions = explosions.filter((exp) => exp.explosion)   //which means those have explosion = true
+        }
+    }
+
     update= (renderer,scene,camera,control)=>{
         renderer.render(
             scene,
@@ -330,9 +393,15 @@
         }
     
         // THREE JS PICKING: https://r105.threejsfundamentals.org/threejs/lessons/threejs-picking.html
-        
+                //Update explosion
+        if(explosions.length>0){
+            explosions.forEach((e)=>e.update())
+        }
+
         control.update()
         requestAnimationFrame(()=>update(renderer,scene,camera,control))
+
+
     }
     update(renderer,scene,camera,control)
 
