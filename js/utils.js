@@ -28,17 +28,43 @@ function getSphere(r){
     return mesh
 }
 
-getPlane = (size)=>{
+function addGeometry(scene, geom, texture,) {
+    var mat = new THREE.MeshStandardMaterial(
+      {
+        map: texture,
+        metalness: 0.2,
+        roughness: 0.07
+    });
+    var mesh = new THREE.Mesh(geom, mat);
+    mesh.castShadow = true;
+    
+    scene.add(mesh);
+  
+    return mesh;
+  };
+
+getPlane = (size,useTexture)=>{
+    let withTexture = (useTexture !== undefined) ? useTexture : false;
+
     const geometry = new THREE.PlaneGeometry(2*size,size);
     const material= new THREE.MeshStandardMaterial({
-        color: 'rgb(0,0 ,120)',
+        color: 0xffffff,
         side: THREE.DoubleSide
     })
+
+    if (withTexture) {
+        var textureLoader = new THREE.TextureLoader();
+        material.map = textureLoader.load("../asset/floor-wood.jpg");
+        material.map.wrapS = THREE.RepeatWrapping; 
+        material.map.wrapT = THREE.RepeatWrapping; 
+        material.map.repeat.set(1,1)
+    }
+
     const mesh =new THREE.Mesh(
         geometry,
         material
     )
-    //mesh.receiveShadow =true
+    mesh.receiveShadow =true
     return mesh
 }
 

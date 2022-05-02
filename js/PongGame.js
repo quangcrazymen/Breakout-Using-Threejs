@@ -1,6 +1,9 @@
 (()=>{
     // listen to the resize events
     window.addEventListener('resize', onResize, false);
+
+    const gui = new dat.GUI();
+
     const scene = new THREE.Scene()
     console.log(THREE.REVISION)
     const camera = new THREE.PerspectiveCamera(
@@ -26,8 +29,12 @@
     scene.add(ball)
     ball.position.y=0.5
 
+    var textureLoader = new THREE.TextureLoader();
+    //var sphere = new THREE.SphereGeometry(0.5, 20, 20)
+    //var sphereMesh = addGeometry(scene, sphere, textureLoader.load('asset/floor-wood.jpg'));
+
     //Add plane
-    const plane = getPlane(25)
+    const plane = getPlane(25,true)
     scene.add(plane)
     plane.name= 'plane'
     plane.rotation.x = Math.PI/2
@@ -154,8 +161,6 @@
         }
         
     }
-
-    const gui = new dat.GUI();
 
     gui.add(controls, 'ballSpeed', 0, 1);
     //gui.add(controls, 'bouncingSpeed', 0, 0.5);
