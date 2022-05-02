@@ -12,6 +12,8 @@
         1,
         1000
     )
+
+
     scene.add( camera );
     //
     //Make top-down camera
@@ -45,7 +47,7 @@
     //Add lighting
     const pointLight = getPointLight(2)
     scene.add(pointLight)
-    pointLight.position.y=10
+    pointLight.position.y=controls.spotLightHeight
     const lightBulb=getSphere(0.05)
     pointLight.add(lightBulb)
 
@@ -111,6 +113,20 @@
     let torusKnotObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
     torusKnotObjectBB.setFromObject(torusKnotGeometry)
 
+    // Seal model
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+        '../asset/seal/scene.gltf',
+        (gltf) => {
+            sealModel = gltf.scene;
+            sealModel.position.set(-10, 3, -1);
+            sealModel.rotation.y = 90;
+            sealModel.rotation.x = -95;
+            sealModel.scale.set(3, 3, 3);
+            scene.add(sealModel);
+        }
+    );
+
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth,window.innerHeight);
     renderer.setClearColor('rgb(120,120,120)')
@@ -163,7 +179,7 @@
     }
 
     gui.add(controls, 'ballSpeed', 0, 1);
-    //gui.add(controls, 'bouncingSpeed', 0, 0.5);
+    gui.add(controls, 'spotLightHeight', 10, 20);
     //gui.add(controls, 'toggleFunction',0,1)
 
     //Adding some fireworks
@@ -180,6 +196,7 @@
     function Explosion(){
         this.particleGroup = new THREE.Group()
         this.explosion = false
+        this.particleTexture = new THREE.TextureLoader().load("asset/Basic_red_dot.png")
         this.particleTexture = new THREE.TextureLoader().load("whiteSpot.png")
         this.numberParticles = Math.random()*200+100
         this.spd = 0.01
@@ -234,6 +251,10 @@
             scene,
             camera
         )
+        
+        //pointLight postion
+        pointLight.position.y=controls.spotLightHeight
+
 
         // Trajectory of the ball when it hit a paddle
         //https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl
@@ -371,7 +392,7 @@
             else{
                 ball.material.opacity=1.0
             }
-            console.log(distanceOfBallAndPaddle)
+            //console.log(distanceOfBallAndPaddle)
         }
         //create bounding box for the ball
         ballBB.copy(ball.geometry.boundingSphere).applyMatrix4(ball.matrixWorld)
