@@ -127,7 +127,7 @@ var controls = new function () {
     // Seal model
     const loader = new THREE.GLTFLoader();
     loader.load(
-        '../asset/seal/scene.gltf',
+        'asset/seal/scene.gltf',
         (gltf) => {
             sealModel = gltf.scene;
             sealModel.position.set(-10, 3, -1);
