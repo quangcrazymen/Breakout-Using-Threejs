@@ -55,7 +55,7 @@ getPlane = (size,useTexture)=>{
 
     if (withTexture) {
         var textureLoader = new THREE.TextureLoader();
-        material.map = textureLoader.load("../asset/floor-wood.jpg");
+        material.map = textureLoader.load("asset/floor-wood.jpg");
         material.map.wrapS = THREE.RepeatWrapping; 
         material.map.wrapT = THREE.RepeatWrapping; 
         material.map.repeat.set(1,1)
