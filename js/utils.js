@@ -6,13 +6,13 @@ getPointLight = (intensity)=>{
 function getBox(w,h,d){
     const geometry = new THREE.BoxGeometry(w,h,d);
     const material= new THREE.MeshPhongMaterial({
-        color: 'rgb(255,120,120)'
+        color: 'rgb(255,0,255)'
     })
     const mesh =new THREE.Mesh(
         geometry,
         material
     )
-    //mesh.castShadow =true
+    mesh.castShadow =true
     return mesh
 }
 
@@ -25,6 +25,7 @@ function getSphere(r){
         geometry,
         material
     )
+    mesh.castShadow = true
     return mesh
 }
 
@@ -64,9 +65,12 @@ getPlane = (size,useTexture)=>{
         geometry,
         material
     )
+    mesh.name = "plane"
     mesh.receiveShadow =true
+    //mesh.castShadow = true
     return mesh
 }
+
 
 getCone =  (radius,height,radialSegments)=>{
     const geometry = new THREE.ConeGeometry(radius, height, radialSegments);
@@ -77,18 +81,20 @@ getCone =  (radius,height,radialSegments)=>{
         geometry,
         material
     )
+    mesh.castShadow=true
     return mesh
 }   
 
 getDodecahedron = (radius)=>{
     const geometry = new THREE.DodecahedronGeometry(radius);
     const material= new THREE.MeshPhongMaterial({
-        color: 'rgb(2,12,255)'
+        color: 'rgb(2,222,156)'
     })
     const mesh =new THREE.Mesh(
         geometry,
         material
     )
+    mesh.castShadow = true
     return mesh
 }
 
@@ -121,6 +127,7 @@ getHeart = ()=>{
         geometry,
         material
     )
+    mesh.castShadow = true
     return mesh
 }
 
@@ -140,7 +147,7 @@ getTorus = ()=>{
         geometry,
         material
     )
-
+    mesh.castShadow = true
     return mesh
 }
 
@@ -160,6 +167,7 @@ getTorusKnot = ()=>{
         geometry,
         material
     )
+    mesh.castShadow = true
     return mesh
 }
 
@@ -228,11 +236,7 @@ function createBoundingWall(scene) {
   }
   //Particle effect
   //https://www.youtube.com/watch?v=DtRFv9_XfnE&t=21s
-var controls = new function () {
-    this.ballSpeed = 0.1;
-    this.spotLightHeight = 10;
-    //this.toggleFunction = 0;
-};
+
 
 //Movement
 DegreeDownRight = (object)=>{

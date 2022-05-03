@@ -1,3 +1,8 @@
+var controls = new function () {
+    this.ballSpeed = 0.1;
+    this.spotLightHeight = 10;
+    //this.useTexture = 0;
+};
 (()=>{
     // listen to the resize events
     window.addEventListener('resize', onResize, false);
@@ -36,6 +41,7 @@
     //var sphereMesh = addGeometry(scene, sphere, textureLoader.load('asset/floor-wood.jpg'));
 
     //Add plane
+    
     const plane = getPlane(25,true)
     scene.add(plane)
     plane.name= 'plane'
@@ -45,17 +51,22 @@
     createBoundingWall(scene)
 
     //Add lighting
-    const pointLight = getPointLight(2)
+    const pointLight = getPointLight(1)
     scene.add(pointLight)
     pointLight.position.y=controls.spotLightHeight
     const lightBulb=getSphere(0.05)
     pointLight.add(lightBulb)
+    pointLight.castShadow=true
 
     //Add a Paddle
-    const paddle = getBox(7,1,0.5)
+    const paddle = getBox(7,1,1)
     scene.add(paddle)
     paddle.position.z=plane.geometry.parameters.height/2-paddle.geometry.parameters.height/2
     paddle.name='paddle'
+    const ambientLight = new THREE.AmbientLight( 0x444040 ); // soft white light
+    ambientLight.add(paddle)
+    scene.add( ambientLight );
+
     //create bounding box for the paddle
     // let testBox = getBox(1,1,1)
     // scene.add(testBox)
@@ -96,8 +107,8 @@
     torusGeometry.position.z = -6
     torusGeometry.position.y = 1
     torusGeometry.position.x = -7
-    const box = new THREE.BoxHelper( torusGeometry, 0xffff00 )
-    scene.add(box)
+    //const box = new THREE.BoxHelper( torusGeometry, 0xffff00 )
+    //scene.add(box)
     let torusObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
     torusObjectBB.setFromObject(torusGeometry)
 
@@ -123,13 +134,25 @@
             sealModel.rotation.y = 90;
             sealModel.rotation.x = -95;
             sealModel.scale.set(3, 3, 3);
+            //console.log(sealModel)
+            sealModel.name = "sealModel"
+            sealModel.castShadow = true
             scene.add(sealModel);
         }
     );
+    //Fix it
+    console.log(scene.children[15])
+    //scene.children[15].visible=false
+    sealModel = scene.getObjectByName("sealModel")
+    console.log(sealModel)
+    //let sealObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
+    //sealObjectBB.setFromObject(loader.parent)
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth,window.innerHeight);
     renderer.setClearColor('rgb(120,120,120)')
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     document.getElementById('webgl').appendChild(renderer.domElement)
 
     //Initiate Controls
@@ -180,6 +203,7 @@
 
     gui.add(controls, 'ballSpeed', 0, 1);
     gui.add(controls, 'spotLightHeight', 10, 20);
+    //gui.add(controls, 'useTexture',0,1)
     //gui.add(controls, 'toggleFunction',0,1)
 
     //Adding some fireworks
@@ -193,7 +217,7 @@
     }
     window.addEventListener("keydown",keyPressed,false)
 
-    function Explosion(){
+    function Explosion(x=Math.random()*20-10,y=Math.random()*5+3,z=Math.random()*10-5){
         this.particleGroup = new THREE.Group()
         this.explosion = false
         this.particleTexture = new THREE.TextureLoader().load("asset/Basic_red_dot.png")
@@ -224,8 +248,8 @@
     
                 this.particleGroup.add(sprite)
             }
-    
-            this.particleGroup.position.set(Math.random()*20-10,Math.random()*5+3,Math.random()*10-5)
+            let pos = new THREE.Vector3(0,0,0)
+            this.particleGroup.position.set(x,y,z)
     
             scene.add(this.particleGroup)
     
@@ -398,25 +422,65 @@
         ballBB.copy(ball.geometry.boundingSphere).applyMatrix4(ball.matrixWorld)
         //Add collision detection for targets in the scene
         if(torusGeometry.visible === true){
-            if(checkCollisions(ball, torusObjectBB))
+            if(checkCollisions(ball, torusObjectBB)){
+                let e = new Explosion(torusGeometry.position.x,torusGeometry.position.y,torusGeometry.position.z)
+                e.makeParticles();
+                explosions.push(e)
                 torusGeometry.visible = false
+            }else{
+                torusGeometry.rotation.x+=0.02
+                torusGeometry.rotation.y+=0.02
+            }
         }
         if(torusKnotGeometry.visible === true){
-            if(checkCollisions(ball, torusKnotObjectBB))
-            torusKnotGeometry.visible = false
+            if(checkCollisions(ball, torusKnotObjectBB)){
+                let e = new Explosion(torusKnotGeometry.position.x,torusKnotGeometry.position.y,torusKnotGeometry.position.z)
+                e.makeParticles();
+                explosions.push(e)
+                torusKnotGeometry.visible = false
+            }else{
+                torusKnotGeometry.rotation.x+=0.02
+                torusKnotGeometry.rotation.z+=0.02
+            }
         }
         if(heartGeometry.visible === true){
-            if(checkCollisions(ball, heartObjectBB))
-            heartGeometry.visible = false
+            if(checkCollisions(ball, heartObjectBB)){
+                heartGeometry.visible = false
+                let e = new Explosion(heartGeometry.position.x,heartGeometry.position.y,heartGeometry.position.z)
+                e.makeParticles();
+                explosions.push(e)
+            }else{
+                heartGeometry.rotation.x+=0.02
+                heartGeometry.rotation.z+=0.02
+            }
         }
         if(dodecahedronGeometry.visible === true){
-            if(checkCollisions(ball, dodecahedronObjectBB))
-            dodecahedronGeometry.visible = false
+            if(checkCollisions(ball, dodecahedronObjectBB)){
+                let e = new Explosion(dodecahedronGeometry.position.x,dodecahedronGeometry.position.y,dodecahedronGeometry.position.z)
+                e.makeParticles();
+                explosions.push(e)
+                dodecahedronGeometry.visible = false
+            }else{
+                dodecahedronGeometry.rotation.x+=0.02
+                dodecahedronGeometry.rotation.z+=0.02
+            }
         }
         if(coneGeometry.visible === true){
-            if(checkCollisions(ball, coneObjectBB))
-            coneGeometry.visible = false
+            if(checkCollisions(ball, coneObjectBB)){
+                let e = new Explosion(coneGeometry.position.x,coneGeometry.position.y,coneGeometry.position.z)
+                e.makeParticles();
+                explosions.push(e)
+                coneGeometry.visible = false
+            }else{
+                coneGeometry.rotation.x+=0.02
+                coneGeometry.rotation.z+=0.02
+                coneGeometry.rotation.y+=0.02
+            }
         }
+        // if(sealModel.visible === true){
+        //     if(checkCollisions(ball, sealObjectBB))
+        //     sealModel.visible = false
+        // }
     
         // THREE JS PICKING: https://r105.threejsfundamentals.org/threejs/lessons/threejs-picking.html
                 //Update explosion
