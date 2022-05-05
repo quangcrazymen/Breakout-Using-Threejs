@@ -1,6 +1,8 @@
 ## Welcome to GitHub Pages
 
  Your site is published at https://quangcrazymen.github.io/Breakout-Using-Threejs/
+ 
+ Link to slides: https://docs.google.com/presentation/d/16bgM4wJ70tZS_4rthAvbLxHMVXsWgBfW/edit?usp=sharing&ouid=115103896596133595721&rtpof=true&sd=true
 
 You can use the [editor on GitHub](https://github.com/quangcrazymen/Burnout-Using-Threejs/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
 
