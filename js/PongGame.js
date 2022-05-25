@@ -540,6 +540,8 @@ var controls = new function () {
 })()
 //group of target box
 
+//dat.gui docs: https://github.com/dataarts/dat.gui/blob/master/API.md#GUI+open
+
 
 //Test javascript
 //Closure ?
