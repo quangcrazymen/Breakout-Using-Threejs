@@ -153,7 +153,7 @@ var controls = new function () {
     renderer.setClearColor('rgb(120,120,120)')
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-    document.getElementById('webgl').appendChild(renderer.domElement)
+    document.getElementById('WebGL').appendChild(renderer.domElement)
 
     //Initiate Controls
     const control=new THREE.OrbitControls(camera,renderer.domElement)
