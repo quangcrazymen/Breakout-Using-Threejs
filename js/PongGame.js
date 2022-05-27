@@ -35,6 +35,7 @@ var controls = new function () {
     const ball = getSphere(0.5)
     scene.add(ball)
     ball.position.y=0.5
+    //https://threejs.org/docs/#examples/en/controls/TransformControls
 
     var textureLoader = new THREE.TextureLoader();
     //var sphere = new THREE.SphereGeometry(0.5, 20, 20)
@@ -201,6 +202,9 @@ var controls = new function () {
         
     }
 
+    gui.domElement.id = "GUI";
+    let ballSetting = gui.addFolder("ball")
+    ballSetting.add(controls, 'ballSpeed', 0, 1);
     gui.add(controls, 'ballSpeed', 0, 1);
     gui.add(controls, 'spotLightHeight', 10, 20);
     //gui.add(controls, 'useTexture',0,1)
