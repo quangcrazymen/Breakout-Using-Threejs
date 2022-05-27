@@ -3,6 +3,7 @@ var controls = new function () {
     this.spotLightHeight = 10;
     //this.useTexture = 0;
 };
+
 (()=>{
     // listen to the resize events
     window.addEventListener('resize', onResize, false);
@@ -10,14 +11,13 @@ var controls = new function () {
     const gui = new dat.GUI();
 
     const scene = new THREE.Scene()
-    console.log(THREE.REVISION)
+
     const camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
         1,
         1000
     )
-
 
     scene.add( camera );
     //
@@ -67,11 +67,6 @@ var controls = new function () {
     const ambientLight = new THREE.AmbientLight( 0x444040 ); // soft white light
     ambientLight.add(paddle)
     scene.add( ambientLight );
-
-    //create bounding box for the paddle
-    // let testBox = getBox(1,1,1)
-    // scene.add(testBox)
-    // testBox.name = 'testBox'
 
     //Add Target Geometry
     const coneGeometry = getCone(1,2,16)
@@ -141,13 +136,9 @@ var controls = new function () {
             scene.add(sealModel);
         }
     );
-    //Fix it
-    console.log(scene.children[15])
-    //scene.children[15].visible=false
+
     sealModel = scene.getObjectByName("sealModel")
     console.log(sealModel)
-    //let sealObjectBB = new THREE.Box3(new THREE.Vector3(),new THREE.Vector3())
-    //sealObjectBB.setFromObject(loader.parent)
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth,window.innerHeight);
@@ -157,7 +148,7 @@ var controls = new function () {
     document.getElementById('WebGL').appendChild(renderer.domElement)
 
     //Initiate Controls
-    const control=new THREE.OrbitControls(camera,renderer.domElement)
+    const control = new THREE.OrbitControls(camera,renderer.domElement)
    
     //Control ball 3
     let upRight = 0
@@ -203,12 +194,14 @@ var controls = new function () {
     }
 
     gui.domElement.id = "GUI";
-    let ballSetting = gui.addFolder("ball")
+    let ballSetting = gui.addFolder("Ball")
     ballSetting.add(controls, 'ballSpeed', 0, 1);
-    gui.add(controls, 'ballSpeed', 0, 1);
+    // Open as defauft
+    ballSetting.open()
+
+    //Setting for light
+    let lightSetting = gui.addFolder("Light")
     gui.add(controls, 'spotLightHeight', 10, 20);
-    //gui.add(controls, 'useTexture',0,1)
-    //gui.add(controls, 'toggleFunction',0,1)
 
     //Adding some fireworks
     let explosions = []
@@ -224,7 +217,7 @@ var controls = new function () {
     function Explosion(x=Math.random()*20-10,y=Math.random()*5+3,z=Math.random()*10-5){
         this.particleGroup = new THREE.Group()
         this.explosion = false
-        this.particleTexture = new THREE.TextureLoader().load("asset/Basic_red_dot.png")
+        //this.particleTexture = new THREE.TextureLoader().load("asset/Basic_red_dot.png")
         this.particleTexture = new THREE.TextureLoader().load("whiteSpot.png")
         this.numberParticles = Math.random()*200+100
         this.spd = 0.01
@@ -282,7 +275,6 @@ var controls = new function () {
         
         //pointLight postion
         pointLight.position.y=controls.spotLightHeight
-
 
         // Trajectory of the ball when it hit a paddle
         //https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl
@@ -481,13 +473,9 @@ var controls = new function () {
                 coneGeometry.rotation.y+=0.02
             }
         }
-        // if(sealModel.visible === true){
-        //     if(checkCollisions(ball, sealObjectBB))
-        //     sealModel.visible = false
-        // }
     
         // THREE JS PICKING: https://r105.threejsfundamentals.org/threejs/lessons/threejs-picking.html
-                //Update explosion
+        //Update explosion
         if(explosions.length>0){
             explosions.forEach((e)=>e.update())
         }
@@ -506,7 +494,6 @@ var controls = new function () {
             left:false
         }
         this.oldKeys={...this.keys_,}
-
 
         document.addEventListener('keydown',(e)=>this.OnKeyDown(e))
         document.addEventListener('keyup',(e)=>this.OnKeyUp(e))
@@ -542,22 +529,5 @@ var controls = new function () {
         renderer.setSize(window.innerWidth, window.innerHeight);
     }  
 })()
-//group of target box
 
 //dat.gui docs: https://github.com/dataarts/dat.gui/blob/master/API.md#GUI+open
-
-
-//Test javascript
-//Closure ?
-;function counter(){
-    let counter = 0 
-    function increment(){
-        return counter++
-    } 
-    return increment
-}
-const a=counter()
-console.log(a())
-console.log(a())
-console.log(a)
-
