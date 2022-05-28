@@ -36,6 +36,7 @@ var controls = new function () {
     scene.add(ball)
     ball.position.y=0.5
     //https://threejs.org/docs/#examples/en/controls/TransformControls
+    AddBall2(scene)
 
     var textureLoader = new THREE.TextureLoader();
     //var sphere = new THREE.SphereGeometry(0.5, 20, 20)
@@ -201,7 +202,8 @@ var controls = new function () {
 
     //Setting for light
     let lightSetting = gui.addFolder("Light")
-    gui.add(controls, 'spotLightHeight', 10, 20);
+    lightSetting.add(controls, 'spotLightHeight', 10, 20);
+    lightSetting.open()
 
     //Adding some fireworks
     let explosions = []

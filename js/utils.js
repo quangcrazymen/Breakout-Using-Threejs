@@ -3,6 +3,7 @@ getPointLight = (intensity)=>{
     return light
 }
 
+
 function getBox(w,h,d){
     const geometry = new THREE.BoxGeometry(w,h,d);
     const material= new THREE.MeshPhongMaterial({
