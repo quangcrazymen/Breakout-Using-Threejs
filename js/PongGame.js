@@ -1,7 +1,7 @@
 var controls = new function () {
     this.ballSpeed = 0.1;
     this.spotLightHeight = 10;
-    //this.useTexture = 0;
+    this.spotLightIntensity = 1;
 };
 
 (()=>{
@@ -55,7 +55,6 @@ var controls = new function () {
     //Add lighting
     const pointLight = getPointLight(1)
     scene.add(pointLight)
-    pointLight.position.y=controls.spotLightHeight
     const lightBulb=getSphere(0.05)
     pointLight.add(lightBulb)
     pointLight.castShadow=true
@@ -139,7 +138,6 @@ var controls = new function () {
     );
 
     sealModel = scene.getObjectByName("sealModel")
-    console.log(sealModel)
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth,window.innerHeight);
@@ -203,73 +201,22 @@ var controls = new function () {
     //Setting for light
     let lightSetting = gui.addFolder("Light")
     lightSetting.add(controls, 'spotLightHeight', 10, 20);
+    lightSetting.add(controls, 'spotLightIntensity', 1, 5);
     lightSetting.open()
 
     //Adding some fireworks
     let explosions = []
     function keyPressed(k){
         if(k.key ===" "){
-            let e = new Explosion
+            let e = new Explosion(scene,explosions)
             e.makeParticles();
             explosions.push(e)
         }
     }
     window.addEventListener("keydown",keyPressed,false)
 
-    function Explosion(x=Math.random()*20-10,y=Math.random()*5+3,z=Math.random()*10-5){
-        this.particleGroup = new THREE.Group()
-        this.explosion = false
-        //this.particleTexture = new THREE.TextureLoader().load("asset/Basic_red_dot.png")
-        this.particleTexture = new THREE.TextureLoader().load("whiteSpot.png")
-        this.numberParticles = Math.random()*200+100
-        this.spd = 0.01
-        this.color = new THREE.Color()
-    
-        this.makeParticles = function(){
-            this.color.setHSL((Math.random(),0.95,0.5))
-    
-            for (let i=0;i<this.numberParticles;i++){
-                let particleMaterial = new THREE.SpriteMaterial({map: this.particleTexture,depthTest : false})
-    
-                let sprite = new THREE.Sprite(particleMaterial)
-    
-                sprite.material.blending = THREE.AdditiveBlending
-    
-                sprite.userData.velocity = new THREE.Vector3(
-                    Math.random() * this.spd - this.spd/2,
-                    Math.random() * this.spd - this.spd/2,
-                    Math.random() * this.spd - this.spd/2,
-                )
-                sprite.userData.velocity.multiplyScalar(Math.random() * Math.random()*3+2)
-    
-                let size = Math.random()*0.1+0.1
-                sprite.scale.set(size ,size,size)
-    
-                this.particleGroup.add(sprite)
-            }
-            let pos = new THREE.Vector3(0,0,0)
-            this.particleGroup.position.set(x,y,z)
-    
-            scene.add(this.particleGroup)
-    
-            this.explosion = true
-    
-        }
-    
-        this.update = ()=>{
-            // ES6: forEach method
-            this.particleGroup.children.forEach((child)=>{
-                child.position.add(child.userData.velocity)
-                child.material.opacity -= 0.008
-            })
-            // ES6: filter method
-            this.particleGroup.child = this.particleGroup.children.filter((child) => child.material.opacity > 0.0)
-            if(this.particleGroup.children.length === 0) this.explosion = false;
-            explosions = explosions.filter((exp) => exp.explosion)   //which means those have explosion = true
-        }
-    }
 
-    update= (renderer,scene,camera,control)=>{
+    updateGame= (renderer,scene,camera,control)=>{
         renderer.render(
             scene,
             camera
@@ -277,6 +224,7 @@ var controls = new function () {
         
         //pointLight postion
         pointLight.position.y=controls.spotLightHeight
+        pointLight.intensity = controls.spotLightIntensity
 
         // Trajectory of the ball when it hit a paddle
         //https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl
@@ -421,7 +369,7 @@ var controls = new function () {
         //Add collision detection for targets in the scene
         if(torusGeometry.visible === true){
             if(checkCollisions(ball, torusObjectBB)){
-                let e = new Explosion(torusGeometry.position.x,torusGeometry.position.y,torusGeometry.position.z)
+                let e = new Explosion(scene,explosions,torusGeometry.position.x,torusGeometry.position.y,torusGeometry.position.z)
                 e.makeParticles();
                 explosions.push(e)
                 torusGeometry.visible = false
@@ -432,7 +380,7 @@ var controls = new function () {
         }
         if(torusKnotGeometry.visible === true){
             if(checkCollisions(ball, torusKnotObjectBB)){
-                let e = new Explosion(torusKnotGeometry.position.x,torusKnotGeometry.position.y,torusKnotGeometry.position.z)
+                let e = new Explosion(scene,explosions,torusKnotGeometry.position.x,torusKnotGeometry.position.y,torusKnotGeometry.position.z)
                 e.makeParticles();
                 explosions.push(e)
                 torusKnotGeometry.visible = false
@@ -444,7 +392,7 @@ var controls = new function () {
         if(heartGeometry.visible === true){
             if(checkCollisions(ball, heartObjectBB)){
                 heartGeometry.visible = false
-                let e = new Explosion(heartGeometry.position.x,heartGeometry.position.y,heartGeometry.position.z)
+                let e = new Explosion(scene,explosions,heartGeometry.position.x,heartGeometry.position.y,heartGeometry.position.z)
                 e.makeParticles();
                 explosions.push(e)
             }else{
@@ -454,7 +402,7 @@ var controls = new function () {
         }
         if(dodecahedronGeometry.visible === true){
             if(checkCollisions(ball, dodecahedronObjectBB)){
-                let e = new Explosion(dodecahedronGeometry.position.x,dodecahedronGeometry.position.y,dodecahedronGeometry.position.z)
+                let e = new Explosion(scene,explosions,dodecahedronGeometry.position.x,dodecahedronGeometry.position.y,dodecahedronGeometry.position.z)
                 e.makeParticles();
                 explosions.push(e)
                 dodecahedronGeometry.visible = false
@@ -465,7 +413,7 @@ var controls = new function () {
         }
         if(coneGeometry.visible === true){
             if(checkCollisions(ball, coneObjectBB)){
-                let e = new Explosion(coneGeometry.position.x,coneGeometry.position.y,coneGeometry.position.z)
+                let e = new Explosion(scene,explosions,coneGeometry.position.x,coneGeometry.position.y,coneGeometry.position.z)
                 e.makeParticles();
                 explosions.push(e)
                 coneGeometry.visible = false
@@ -483,11 +431,11 @@ var controls = new function () {
         }
 
         control.update()
-        requestAnimationFrame(()=>update(renderer,scene,camera,control))
+        requestAnimationFrame(()=>updateGame(renderer,scene,camera,control))
 
 
     }
-    update(renderer,scene,camera,control)
+    updateGame(renderer,scene,camera,control)
 
     //Add control for the paddle
     ;(()=>{
@@ -497,34 +445,12 @@ var controls = new function () {
         }
         this.oldKeys={...this.keys_,}
 
-        document.addEventListener('keydown',(e)=>this.OnKeyDown(e))
-        document.addEventListener('keyup',(e)=>this.OnKeyUp(e))
+        document.addEventListener('keydown',(e)=>this.OnKeyDown(e,scene))
+        document.addEventListener('keyup',(e)=>this.OnKeyUp(e,scene))
 
     })()
 
-    OnKeyDown = (Event)=>{
-        const paddle = scene.getObjectByName('paddle')
-        switch (Event.keyCode){
-            case 68:
-                paddle.position.x+=0.5
-                this.keys_.right=true
-                break
-            case 65:
-                paddle.position.x-=0.5
-                this.keys_.left=true
-                break
-        }
-    }
-    OnKeyUp=(Event)=>{
-        switch (Event.keyCode){
-            case 68:
-                this.keys_.right=false
-                break
-            case 65:
-                this.keys_.left=false
-                break
-        }
-    }   
+
     function onResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
