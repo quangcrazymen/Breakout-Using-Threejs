@@ -1,7 +1,7 @@
 var controls = new function () {
     this.ballSpeed = 0.1;
-    this.spotLightHeight = 10;
-    this.spotLightIntensity = 1;
+    this.pointLightHeight = 10;
+    this.pointLightIntensity = 1;
 };
 
 (()=>{
@@ -200,10 +200,21 @@ var controls = new function () {
 
     //Setting for light
     let lightSetting = gui.addFolder("Light")
-    lightSetting.add(controls, 'spotLightHeight', 10, 20);
-    lightSetting.add(controls, 'spotLightIntensity', 1, 5);
+    lightSetting.add(controls, 'pointLightHeight', 10, 20);
+    lightSetting.add(controls, 'pointLightIntensity', 1, 5);
     lightSetting.open()
 
+    // Camera gui
+    function updateCamera() {
+        camera.updateProjectionMatrix();
+    }
+
+    var cameraGUI = gui.addFolder("Camera");
+    cameraGUI.add(camera, "fov", 0, 175).name("FOV").onChange(updateCamera);
+    cameraGUI.add(camera, "near", 1, 50, 1).name("Near").onChange(updateCamera);
+    cameraGUI.add(camera, "far", 1000, 5000, 10).name("Far").onChange(updateCamera);
+    cameraGUI.close();
+    
     //Adding some fireworks
     let explosions = []
     function keyPressed(k){
@@ -262,8 +273,8 @@ var controls = new function () {
         )
         
         //pointLight postion
-        pointLight.position.y=controls.spotLightHeight
-        pointLight.intensity = controls.spotLightIntensity
+        pointLight.position.y=controls.pointLightHeight
+        pointLight.intensity = controls.pointLightIntensity
 
         // Trajectory of the ball when it hit a paddle
         //https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl
