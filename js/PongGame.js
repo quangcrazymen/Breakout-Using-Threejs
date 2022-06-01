@@ -37,6 +37,7 @@ var controls = new function () {
     ball.position.y=0.5
     //https://threejs.org/docs/#examples/en/controls/TransformControls
     AddBall2(scene)
+    console.log(ball)
 
     var textureLoader = new THREE.TextureLoader();
     //var sphere = new THREE.SphereGeometry(0.5, 20, 20)
