@@ -1,9 +1,9 @@
-var controls = new function () {
+let controls = new function () {
     this.ballSpeed = 0.1;
     this.pointLightHeight = 10;
     this.pointLightIntensity = 1;
 };
-
+let activeControl = false;
 (()=>{
     // listen to the resize events
     window.addEventListener('resize', onResize, false);
@@ -38,6 +38,7 @@ var controls = new function () {
     //https://threejs.org/docs/#examples/en/controls/TransformControls
     AddBall2(scene)
     console.log(ball)
+    ball.geometry
 
     var textureLoader = new THREE.TextureLoader();
     //var sphere = new THREE.SphereGeometry(0.5, 20, 20)
@@ -45,7 +46,7 @@ var controls = new function () {
 
     //Add plane
     
-    const plane = getPlane(25,true)
+    let plane = getPlane(25,true)
     scene.add(plane)
     plane.name= 'plane'
     plane.rotation.x = Math.PI/2
@@ -246,14 +247,17 @@ var controls = new function () {
                 case "translate":
                     transformControls.attach(ball);
                     transformControls.setMode("translate");
+                    controls.ballSpeed = 0;
                     break;
                 case "rotate":
                     transformControls.attach(ball);
                     transformControls.setMode("rotate");
+                    controls.ballSpeed = 0;
                     break;
                 case "scale":
                     transformControls.attach(ball);
                     transformControls.setMode("scale");
+                    controls.ballSpeed = 0;
                     break;
                 case "move-light":
                     transformControls.attach(pointLight);
@@ -267,6 +271,48 @@ var controls = new function () {
             scene.add(transformControls);
         }
     });
+
+    //Handle event on click surface
+    $(".surface").click(function () {
+        if (activeControl) {
+            $(".controls-btn.active").removeClass("active");
+        }
+
+        let loader = new THREE.TextureLoader();
+        scene.remove(scene.getObjectByName("geometry"));
+
+        var materialName = $(this).text(),
+            materialColor = ball.material.color;
+
+        switch (materialName) {
+            case "Dots":
+                ball.material = new THREE.MeshStandardMaterial({
+                    map: loader.load("./asset/textures/dots.jpg"),
+                });
+                break;
+            case "Concrete":
+                ball.material = new THREE.MeshStandardMaterial({
+                    map: loader.load("./asset/textures/concrete.jpeg"),
+                });
+                break;
+            case "Water":
+                ball.material = new THREE.MeshStandardMaterial({
+                    map: loader.load("./asset/textures/water.jpg"),
+                });
+                break;
+            case "Wood":
+                ball.material = new THREE.MeshStandardMaterial({
+                    map: loader.load("./asset/floor-wood.jpg"),
+                });
+                break;
+            case "Panda":
+                ball.material = new THREE.MeshStandardMaterial({
+                    map: loader.load("./asset/textures/po.webp"),
+                });
+                break;
+        }
+    });
+
     updateGame= (renderer,scene,camera,control)=>{
         renderer.render(
             scene,
