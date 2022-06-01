@@ -215,7 +215,46 @@ var controls = new function () {
     }
     window.addEventListener("keydown",keyPressed,false)
 
+    let transformControls = new THREE.TransformControls(camera, renderer.domElement);
+    transformControls.size = 0.5;
+    transformControls.addEventListener("dragging-changed", (event) => {
+        control.enabled = !event.value;
+    });
 
+    //Handle event click on button controls
+    $(".controls-btn").click(function () {
+        if ($(this).hasClass("active")) {
+            $(this).removeClass("active");
+            transformControls.detach(ball);
+            activeControl = false;
+        } else {
+            activeControl = true;
+            const controlType = $(this).attr("type");
+            switch (controlType) {
+                case "translate":
+                    transformControls.attach(ball);
+                    transformControls.setMode("translate");
+                    break;
+                case "rotate":
+                    transformControls.attach(ball);
+                    transformControls.setMode("rotate");
+                    break;
+                case "scale":
+                    transformControls.attach(ball);
+                    transformControls.setMode("scale");
+                    break;
+                case "move-light":
+                    transformControls.attach(pointLight);
+                    transformControls.setMode("translate");
+                    break;
+            }
+
+            $(".controls-btn.active").removeClass("active");
+            $(this).addClass("active");
+
+            scene.add(transformControls);
+        }
+    });
     updateGame= (renderer,scene,camera,control)=>{
         renderer.render(
             scene,
